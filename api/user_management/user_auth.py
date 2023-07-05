@@ -22,10 +22,10 @@ import config
 
 
 
-auth_router = APIRouter(prefix='/auth', tags=['auth'])
+auth_router = APIRouter( tags=['auth'])
 
 #TODO: Use FastAPI-Users library
-@auth_router.post('/login')
+@auth_router.get('/login')
 @frontend_api_generic_exception
 def login(login_user: LoginUserDTO):
     if(login_user.email == "" or login_user.password  == ""):
@@ -44,6 +44,8 @@ def login(login_user: LoginUserDTO):
 
     access_token = create_access_token(email=user.email)
     return dict(token=access_token),200
+    # return {"Hello World"}
+
 
 
 @auth_router.get('/logout')

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="form-container sign-up-container">
+          <form action="#" class="signup-form" id="signup-form" onsubmit="handle_signup(event)">
+            <h1>Create Account</h1>
+            <!-- <span>or use your email for registration</span> -->
+            <input name="name" type="text" placeholder="Enter your name" />
+            <input name="number" type="number" placeholder="Enter your number" />
+            <input name="password" type="password" placeholder="Enter your password" />
+            <a href="#">Already have an account?</a>
+            <button type="submit">Sign Up</button>
+          </form>
+        </div>
+  
+        <div class="form-container sign-in-container">
+          <form action="#" class="signin-form">
+            <h1>Sign in</h1>
+            <input type="number" placeholder="Enter your number" />
+            <input type="password" placeholder="Enter your password" />
+            <a href="#">Forgot your password?</a>
+            <button>Sign In</button>
+          </form>
+        </div>
+        <div class="overlay-container">
+          <div class="overlay">
+            <div class="overlay-panel overlay-left">
+              <h1>Thanks for choosing us</h1>
+              <p>Enter your personal details</p>
+              <button class="ghost" id="signIn">Sign In</button>
+            </div>
+            <div class="overlay-panel overlay-right">
+              <h1>Welcome Back!</h1>
+              <p>To keep connected with us please login with your personal info</p>
+              <button class="ghost" id="signUp">Sign Up</button>
+            </div>
+          </div>
+        </div>
+      </div>  
+</body>
+<script>
+    const signUpButton = document.getElementById('signUp');
+const signInButton = document.getElementById('signIn');
+const container = document.getElementById('container');
+
+signUpButton.addEventListener('click', () => {
+	container.classList.add("right-panel-active");
+});
+
+signInButton.addEventListener('click', () => {
+	container.classList.remove("right-panel-active");
+});
+
+
+        function handle_signup(event){
+        event.preventDefault();
+        var form =document.getElementById("signup-form");
+        var formData=new FormData(form);
+
+        // var isReplacementMade=localStorage.getItem("replacementMade");
+
+        fetch('/signup',{
+          method:'POST',
+          body:formData
+        }).then(response => {
+          if(response.ok){
+            console.log('Form data submitted')
+          }else{
+            console.log('Not submitted')
+          }
+        }).catch(error => {
+          console.error('Error occurred while submitting form data:', error);
+        });
+       
+        var parent =document.getElementById('container').parentNode;
+        var oldDiv =document.getElementById("container");
+        parent.removeChild(oldDiv);
+
+        var newDiv=document.getElementById("center_container");
+        parent.appendChild(newDiv);
+
+        oldDiv.style.display="none";
+        newDiv.style.display="block";
+      }
+</script>
+</html>

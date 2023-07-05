@@ -18,7 +18,6 @@ from api.user_management.user_basic_api import user_router
 import uvicorn
 import config
 import bcrypt
-import binascii
 
 app = FastAPI()
 
@@ -69,9 +68,7 @@ faceId=None
 @app.get("/")
 def home(request: Request):
     face_detected=None
-    matched=None
-    auth=None
-    return templates.TemplateResponse("index.html", {"request": request,"face_detected":face_detected,"matched":matched,"auth":auth})
+    return templates.TemplateResponse("index.html", {"request": request,"face_detected":face_detected})
 
 def recognizeFace(client,image_data):
     face_matched = False
@@ -85,44 +82,16 @@ def recognizeFace(client,image_data):
 
 
 @app.post("/signup")
-async def signup_details(request: Request,name: str = Form(...),number: str = Form(...),password:str = Form(...)):
+async def signup_details(name: str = Form(...),number: str = Form(...),password:str = Form(...)):
     conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
     cursor = conn.cursor()
-    password=binascii.hexlify(password.encode()).decode()
-   
+    salt = bcrypt.gensalt()
+    password=bcrypt.hashpw(password.encode('utf-8'), salt)
     cursor.execute("INSERT INTO users (name,phone,password) VALUES (%s, %s, %s)", (name, number,password))
     conn.commit()
     cursor.close()
     conn.close()
-    auth=True
-    face_detected=None
-    return templates.TemplateResponse("index.html", {"request":request,"face_detected":face_detected,"auth":auth})
 
-# def text_to_binary(text):
-#     binary = ''
-#     for char in text:
-#         binary += bin(ord(char))[2:].zfill(8)  # Convert character to binary and pad with zeros
-#     return binary
-
-@app.post("/signin")
-async def signin_details(request: Request,number:str=Form(...),password:str=Form(...)):
-    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST)
-    cursor = conn.cursor()
-    cursor.execute('''SELECT password FROM users where phone = %s''',(number,))
-    record=cursor.fetchone()[0]
-    # print()
-    cursor.close()
-    conn.close()
-    if(record == binascii.hexlify(password.encode()).decode()):
-        matched=1
-        auth=True
-        face_detected=None
-        return templates.TemplateResponse("index.html", {"request":request,"face_detected":face_detected,"auth":auth})
-    else:
-        matched=0
-        return {"matched":matched}
-    
-    
 
 
 
@@ -139,8 +108,8 @@ async def submit_details(request: Request,file: List[UploadFile] = File(...)):
 
         global img_data
         img_data=image_data
-        auth=True
-        return templates.TemplateResponse("index.html", {"request":request,"face_detected": face_detected,"auth":auth})
+
+        return templates.TemplateResponse("index.html", {"request":request,"face_detected": face_detected})
     else:
         global faceId
         # faceId=face_id
@@ -158,8 +127,7 @@ async def submit_details(request: Request,file: List[UploadFile] = File(...)):
         if record:
             columns = ['face_id', 'name', 'age', 'address', 'contact_info']
             record_dict = dict(zip(columns, record))
-            auth=True
-            return templates.TemplateResponse("index.html",{"request":request,"face_detected":face_detected,"auth":auth,"record_dict": record_dict})
+            return templates.TemplateResponse("index.html",{"request":request,"face_detected":face_detected,"record_dict": record_dict})
         else:
             return {"message": "Record not found"}    
 

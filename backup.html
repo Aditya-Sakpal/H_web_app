@@ -1,0 +1,586 @@
+<html>
+  <head>
+    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" /> -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/index.css') }}">
+    <style>
+     
+  </style>
+
+  </head>
+  <body>
+    <div class="container" id="container">
+      <div class="form-container sign-up-container">
+        <form action="#" class="signup-form" id="signup-form" onsubmit="handle_signup(event)">
+          <h1>Create Account</h1>
+          <!-- <span>or use your email for registration</span> -->
+          <input name="name" type="text" placeholder="Enter your name" />
+          <input name="number" type="number" placeholder="Enter your number" />
+          <input name="password" type="password" placeholder="Enter your password" />
+          <a href="#">Already have an account?</a>
+          <button type="submit">Sign Up</button>
+        </form>
+      </div>
+
+      <div class="form-container sign-in-container">
+        <form action="#" class="signin-form">
+          <h1>Sign in</h1>
+          <input type="number" placeholder="Enter your number" />
+          <input type="password" placeholder="Enter your password" />
+          <a href="#">Forgot your password?</a>
+          <button>Sign In</button>
+        </form>
+      </div>
+      <div class="overlay-container">
+        <div class="overlay">
+          <div class="overlay-panel overlay-left">
+            <h1>Thanks for choosing us</h1>
+            <p>Enter your personal details</p>
+            <button class="ghost" id="signIn">Sign In</button>
+          </div>
+          <div class="overlay-panel overlay-right">
+            <h1>Welcome Back!</h1>
+            <p>To keep connected with us please login with your personal info</p>
+            <button class="ghost" id="signUp">Sign Up</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <!-- Image Entry -->
+  
+    <div class="center_container" id="center_container">
+      <h1>Enter Person's Image</h1>
+    <form action="/submit" enctype="multipart/form-data" method="post" class="form_1">
+      <input name="file" type="file" multiple />
+      <input type="submit" value="Submit" />
+    </form>
+  </div>
+
+    {% if face_detected == None %}
+    <p></p>
+    {% elif not face_detected %}
+      <button id="get_details_btn" onclick="handle_get_details_click()" style="display: none;"></button>
+
+      <div id="overlay1" class="overlay1" onclick="closePopUp1()">
+        <div class="popup1" id="popup1">
+          <div>
+          <h3>Sorry we were unable to find details</h3>
+        </div>
+        <p>Please fill out the following form</p>
+        <!-- <hr> -->
+          <div class="insertDataContainer">
+          <form action="/insertdata" enctype="multipart/form-data" method="post" onclick="event.stopPropagation()" onsubmit="disp_recorded_msg(event)" id="form1">
+            <div class="MuiFormControl-root">
+
+              <input type="text" id="name" name="name" class="MuiInput-root" placeholder="Name" /><br /><br />
+            </div>
+      
+            <div class="MuiFormControl-root">
+    
+              <input type="number" id="age" name="age" class="MuiInput-root" placeholder="Age" /><br /><br />
+            </div>
+      
+            <div class="MuiFormControl-root">
+    
+              <input type="text" id="address" name="address" class="MuiInput-root" placeholder="Address" /><br /><br />
+            </div>
+      
+            <div class="MuiFormControl-root">
+    
+              <input type="text" id="contact" name="contact" class="MuiInput-root"placeholder="Contact" required /><br /><br />
+            </div>
+      
+            <!-- <input type="hidden" name="face_id" value="{{ face_id }}" /> -->
+
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+        </div>
+
+        <div class="recorded_msg" id="recorded_msg">
+          <img width="96" height="96" src="https://img.icons8.com/neon/96/checked.png" alt="checked"/>
+          <div>
+            <h2>We've recorded the details</h2>
+          </div>
+          <div>
+            <h3>We will notify you once we found the person</h3>
+          </div>
+          
+        </div>
+
+
+      </div>
+
+    {% elif face_detected %}
+   
+    <button id="disp_details_btn" onclick="handle_disp_details_click()" style="display: none;"></button>
+
+    <div id="overlay2" class="overlay2" onclick="closePopUp()"> 
+      <div class="popup" id="popup" onclick="event.stopPropagation()">
+          <h3>Record Details</h3>
+          <hr>
+          <ul class="ul1">
+            <li><strong>Face ID:</strong> {{ record_dict.face_id }}</li>
+            <li><strong>Name:</strong> {{ record_dict.name }}</li>
+            <li><strong>Age:</strong> {{ record_dict.age }}</li>
+            <li><strong>Address:</strong> {{ record_dict.address }}</li>
+            <li><strong>Contact Info:</strong> {{ record_dict.contact_info }}</li>
+          </ul>
+          Is this the person you were looking for ?
+          <div class="btn_container">
+            <button onclick="getRecieverDetails()">YES</button>
+            <button>NO</button>
+      </div>
+      <!-- <button onclick="closePopUp()">OK</button> -->
+      </div>
+      <div class="receiver_container" id="receiver_container" onclick="event.stopPropagation()">
+        <form action="/insertrecieverdata" enctype="multipart/form-data" method="post" onclick="event.stopPropagation()"  onsubmit="disp_greeting(event)" id="form2">
+          <h2>Please enter you details</h2>
+          <hr>
+          <div class="MuiFormControl-root">
+            <input type="text" id="name" name="name" class="MuiInput-root" placeholder="Enter your name" /><br /><br />
+          </div>
+          <div class="MuiFormControl-root">
+            <input type="number" id="contact" name="contact" class="MuiInput-root" placeholder="Enter your phone number" /><br /><br />
+          </div>
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+
+      <div class="greeting" id="greeting">
+        <img width="96" height="96" src="https://img.icons8.com/neon/96/checked.png" alt="checked"/>
+        <div>
+          <h2>We're glad you found the person</h2>
+        </div>
+        <div>
+          <h3>Happy to help</h3>
+        </div>
+        
+      </div>
+
+    </div>
+
+    
+    {% endif %} 
+    <!-- {{face_detected}} -->
+    <script>
+const signUpButton = document.getElementById('signUp');
+const signInButton = document.getElementById('signIn');
+const container = document.getElementById('container');
+
+signUpButton.addEventListener('click', () => {
+	container.classList.add("right-panel-active");
+});
+
+signInButton.addEventListener('click', () => {
+	container.classList.remove("right-panel-active");
+});
+
+
+
+      function handle_signup(event){
+        event.preventDefault();
+        var form =document.getElementById("signup-form");
+        var formData=new FormData(form);
+
+        // var isReplacementMade=localStorage.getItem("replacementMade");
+
+        fetch('/signup',{
+          method:'POST',
+          body:formData
+        }).then(response => {
+          if(response.ok){
+            console.log('Form data submitted')
+          }else{
+            console.log('Not submitted')
+          }
+        }).catch(error => {
+          console.error('Error occurred while submitting form data:', error);
+        });
+       
+        var parent =document.getElementById('container').parentNode;
+        var oldDiv =document.getElementById("container");
+        parent.removeChild(oldDiv);
+
+        var newDiv=document.getElementById("center_container");
+        parent.appendChild(newDiv);
+
+        oldDiv.style.display="none";
+        newDiv.style.display="block";
+
+        
+
+      }
+      
+
+
+      function disp_recorded_msg(event){
+
+        event.preventDefault();
+        var form =document.getElementById("form1");
+        var formData=new FormData(form);
+        fetch('/insertdata',{
+          method:'POST',
+          body:formData
+        }).then(response => {
+          if(response.ok){
+            console.log('Form data submitted')
+          }else{
+            console.log('Not submitted')
+          }
+        }).catch(error => {
+          console.error('Error occurred while submitting form data:', error);
+        })
+
+        var container=document.getElementById('overlay1');
+        var div1=document.getElementById('popup1');
+        // var div1=document.getElementById('receiver_container');
+        var div2=document.getElementById('recorded_msg');
+        
+        div1.style.display="none";
+        div2.style.display="block";
+
+        container.replaceChild(div2,div1);
+      }
+
+      function disp_greeting(event){
+        event.preventDefault();
+        var form =document.getElementById('form2');
+        var formData=new FormData(form);
+
+        fetch('/insertrecieverdata',{
+          method:'POST',
+          body:formData
+        }).then(response => {
+          if(response.ok){
+            console.log('Form Data submitted');
+          }else{
+            console.error('Not Submitted');
+          }
+        }).catch(error => {
+          console.error('Error occurred while submitting form data:', error);
+        });
+
+        var container=document.getElementById('overlay2');
+        // var div1=document.getElementById('popup');
+        var div1=document.getElementById('receiver_container');
+        var div2=document.getElementById('greeting');
+        
+        div1.style.display="none";
+        div2.style.display="block";
+
+        container.replaceChild(div2,div1);
+        
+      }
+      window.addEventListener('DOMContentLoaded',function(){
+        var btn=document.getElementById('disp_details_btn');
+        btn.click();
+      });
+      window.addEventListener('DOMContentLoaded',function(){
+        var btn=document.getElementById('get_details_btn');
+        btn.click();
+      });
+
+      function getRecieverDetails(){
+        var container=document.getElementById('overlay2');
+        var div1=document.getElementById('popup');
+        var div2=document.getElementById('receiver_container');
+
+        div1.style.display="none";
+        div2.style.display="block";
+
+        container.replaceChild(div2,div1);
+      }
+
+      function closeRecieverDetails(){
+        let receiver_container=document.getElementById('receiver_container');
+        receiver_container.style.display="none";
+        var overlay = document.getElementById("overlay2");
+        overlay.style.display = "none";        
+      }
+
+
+      function openPopUp(){
+        let popup=document.getElementById("popup");
+        popup.classList.add("open-popup");
+        var overlay = document.getElementById("overlay2");
+        overlay.style.display = "block";
+      }
+
+      function openPopUp1(){
+        let popup=document.getElementById("popup1");
+        popup.classList.add("open-popup1");
+
+        var overlay = document.getElementById("overlay1");
+        overlay.style.display = "block";
+      }
+      function handle_get_details_click(){
+        openPopUp1();
+      }
+
+      function closePopUp1(){
+        let popup=document.getElementById("popup1");
+        let recorded_msg=document.getElementById("recorded_msg");
+
+        if(popup){
+          popup.classList.remove("open-popup1");
+        }else{
+          recorded_msg.style.display="none";
+        }
+
+        
+        var overlay = document.getElementById("overlay1");
+        overlay.style.display = "none";
+      }
+
+      function closePopUp(){
+        let popup=document.getElementById("popup");
+        let receiver_container=document.getElementById("reciever_container");
+        let greeting=document.getElementById("greeting");
+
+        // popup.classList.remove("open-popup");
+        var overlay = document.getElementById("overlay2");
+        if(popup){
+          popup.classList.remove("open-popup");
+        }
+        else if(receiver_container){
+          receiver_container.style.display="none";
+        }else{
+          greeting.style.display="none";
+        }
+
+        overlay.style.display = "none";
+        // closePopUp3();
+      }
+
+
+      function handle_disp_details_click(){
+        openPopUp();
+      }
+
+    </script>
+    <style>
+      .center_container{
+        display: none;
+        margin-bottom: 350px;
+      }
+
+      .recorded_msg{
+        display: none;
+        width:450px;
+        background:#fff;
+        border-radius: 6px;
+        position:absolute;
+        top:50%;
+        left: 50%;
+        transform:translate(-50%,-50%);
+        text-align: center;
+        padding: 0 10px 10px;
+        color:#333;
+        padding-top: 20px;
+      }
+      .recorded_msg img{
+        margin-right: 10px;
+      }
+
+      .greeting{
+        display: none;
+        width:450px;
+        background:#fff;
+        border-radius: 6px;
+        position:absolute;
+        top:50%;
+        left: 50%;
+        transform:translate(-50%,-50%);
+        text-align: center;
+        padding: 0 10px 10px;
+        color:#333;
+        padding-top: 20px;
+      }
+      .greeting img{
+        margin-right: 10px;
+      }
+      .insertDataContainer{
+        /* padding: 10px 10px 10px 10px; */
+        /* padding-right: 10px; */
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-top: 20px;
+      }
+
+              .overlay2 {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        display: none;
+      }
+      .popup{
+        width:450px;
+        background:#fff;
+        border-radius: 6px;
+        position:absolute;
+        top:50%;
+        left: 50%;
+        transform:translate(-50%,-50%) scale(0.1);
+        text-align: center;
+        /* padding: 0 30px 30px; */
+        color:#333;
+        /* visibility: hidden; */
+      }
+      .popup h3{
+        font-size: 38px;
+        font-weight:500;
+        margin:30px 0 10px;
+        color: #1565c0;
+      }
+      .popup hr{
+        border: none;
+        height: 1px;
+        background-color: #ccc;
+        margin: 10px 0;
+      }
+      .popup button{
+        width :100%;
+        margin-top:50px;
+        padding:10px 0;
+        background:#1565c0;
+        color:#fff;
+        border:0;
+        outline:none;
+        font-size:18px;
+        font-family: 'Roboto', sans-serif;
+        font-weight: 100;
+        /* border-radius:4px; */
+        cursor:pointer;
+        box-shadow: 0 5px 5px rgba(0,0,0,0.2);
+      }
+      .open-popup{
+        visibility: visible;
+        transform:translate(-50%,-50%) scale(1);
+      }
+      .ul1{
+        text-align: left;
+        padding-left: 20px;
+      }
+      .get_details_btn{
+        width: 100px;
+      }
+
+
+      /* get details css */
+
+      .overlay1 {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        display: none;
+      }
+      .popup1{
+        width:450px;
+        background:#fff;
+        border-radius: 6px;
+        position:absolute;
+        top:50%;
+        left: 50%;
+        transform:translate(-50%,-50%) scale(0.1);
+        text-align: center;
+        /* padding: 0 30px 30px; */
+        color:#333;
+        /* visibility: hidden; */
+      }
+      .popup1 h3{
+        font-size: 38px;
+        font-weight:500;
+        margin:30px 0 10px;
+        color: #1565c0;;
+      }
+      .popup1 hr{
+        border: none;
+        height: 1px;
+        background-color: #ccc;
+        margin: 10px 0;
+      }
+      .popup1 button{
+        width :100%;
+        margin-top:50px;
+        padding:10px 0;
+        background:#1565c0;
+        color:#fff;
+        border:0;
+        outline:none;
+        font-size:18px;
+        font-family: 'Roboto', sans-serif;
+        font-weight: 100;
+        /* border-radius:4px; */
+        cursor:pointer;
+        box-shadow: 0 5px 5px rgba(0,0,0,0.2);
+      }
+      .open-popup1{
+        visibility: visible;
+        transform:translate(-50%,-50%) scale(1);
+      }
+      .btn_container{
+        display: flex;
+        justify-content: space-around;
+      }
+      .btn_container button{
+        margin: 10px;
+      }
+
+      .receiver_container{
+        display: none;
+        width:450px;
+        background:#fff;
+        border-radius: 6px;
+        position:absolute;
+        top:50%;
+        left: 50%;
+        transform:translate(-50%,-50%);
+        text-align: center;
+        padding: 0 10px 10px;
+        color:#333;
+        padding-top: 20px;
+        /* visibility: hidden; */
+      }
+
+      .receiver_container input{
+        border: none;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+      .receiver_container input:first-child{
+        margin-top: 10px;
+      }
+
+      .receiver_container button{
+        background-color: #1565c0; /* Blue submit button background */
+    color: #ffffff; /* White submit button text */
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+      }
+      .receiver_container h2{
+        color: #1565c0;
+      }
+      .receiver_container hr{
+        border: none;
+        height: 1px;
+        background-color: #ccc;
+        margin: 10px 0;
+      }
+    </style>
+  </body>
+</html>
